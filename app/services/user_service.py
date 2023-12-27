@@ -6,9 +6,9 @@ class UserService:
     @staticmethod
     def create_user(data, db):
         new_user = User(
-            ID=data['id'], 
-            PASSWORD=data['password'],
-            REFRESHTOKEN = create_refresh_token(data['password'])
+            ID=data['ID'], 
+            PASSWORD=data['PASSWORD'],
+            REFRESHTOKEN = create_refresh_token(data['PASSWORD'])
         )
         db.add(new_user)
         try:
@@ -20,22 +20,22 @@ class UserService:
             raise
     
     @staticmethod
-    def exisiting_user(id, db):
+    def exisiting_user(ID, db):
         '''
             @params : `ID:str`
         '''
-        return db.query(User).filter(User.ID == id).first()
+        return db.query(User).filter(User.ID == ID).first()
     
 
     @staticmethod
-    def update_refreshtoken(id, token, db):
-        db.query(User).filter(User.ID == id).update({'REFRESHTOKEN': token})
+    def update_refreshtoken(ID, token, db):
+        db.query(User).filter(User.ID == ID).update({'REFRESHTOKEN': token})
         db.commit()
         return 
 
     @staticmethod
-    def update_password(id, password, new_password, db):
-        user = db.query(User).filter(User.ID == id).first()
+    def update_password(ID, password, new_password, db):
+        user = db.query(User).filter(User.ID == ID).first()
 
         if user:
             if user.PASSWORD == password:

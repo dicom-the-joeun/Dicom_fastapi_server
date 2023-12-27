@@ -6,8 +6,6 @@ from fastapi import HTTPException
 from jose import JWTError, jwt
 from starlette import status
 
-from app.models import Apimodel
-
 load_dotenv("./app/.env")
 ACCESS_TOKEN_EXPIRES_MIN = 30
 REFRESH_TOKEN_EXPIRES_MIN = 60 * 24 *7

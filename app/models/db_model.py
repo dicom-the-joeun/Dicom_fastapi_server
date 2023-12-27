@@ -49,7 +49,7 @@ class User(Base):
     PHONE = Column(Text)
     PROFILE = Column(Text)
     USERNAME = Column(Text)
-    # RefreshToken = Column(Text)
+    REFRESHTOKEN = Column(Text)
 
 class StudyTab(Base):
     __tablename__ = 'studytab'

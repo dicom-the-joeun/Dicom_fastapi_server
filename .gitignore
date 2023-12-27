@@ -166,3 +166,4 @@ nohup.out
 start_app_debug.sh
 ./*.bat
 ./*.sh
+*.dcm

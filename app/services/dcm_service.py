@@ -1,19 +1,21 @@
-"""
-    Dicom Services
-    Author : Okrie
-    Date : 2023-12-27
-    Ver : 0.1
-    License : MIT
-"""
+from io import BytesIO
+from app.conf.ftp_config import FTPConfig
+from app.util.dcm_gen import ConvertDCM
 
-from ftplib import FTP
-from conf.ftp_config import FTPConfig
+ftp = FTPConfig()
 
 
-# FTB Config Load
-CONFTP = FTPConfig()
-
-
-class DicomService:
-    def __init__(self):
-        pass
+class DcmService:
+    @staticmethod
+    def get_dcm(filepath, filename):
+        # filepath = f'/{filename}'
+        conv = ConvertDCM()
+        try:
+            ftp.connect()
+            print(filepath)
+            data = ftp.getdata(filepath=filepath, filename=filename)
+        except Exception as e:
+            print(f'문제는 {e}')
+        finally:
+            ftp.disconnect()
+            return conv.dicomToJSON(data)
