@@ -1,17 +1,14 @@
-"""
-    Dicom Control
-    Author : Okrie
-    Date : 2023-12-27
-    Ver : 0.1
-    License : MIT
-"""
-
 import matplotlib.pyplot as plt
 from pydicom import dcmread, multival
 import numpy as np
-import os
 import base64
 from pydicom import dcmread
+from ftplib import FTP
+from conf.ftp_config import FTPConfig
+
+
+# FTB Config Load
+CONFTP = FTPConfig()
 
 """
     TODO : 
@@ -23,14 +20,9 @@ from pydicom import dcmread
 """
 
 class recontrol:
-    """
-    Dicom Control
-    pixel_data Control
-    Author : Okrie
-    Date : 2023-12-27
-    Ver : 0.1
-    License : MIT
-    """
+    
+    def __init__(self):
+        CONFTP.connect()
     
     # byte to ndarray
     @staticmethod
@@ -46,40 +38,42 @@ class recontrol:
 
     # Convert Pixel data
     @staticmethod
-    def convertPixel(filename, type='b', paths=os.path.abspath(os.path.dirname(os.path.dirname(__file__))) + '/' ):
+    def convertPixel(filename, type='b'):
         """
             ### convertPixel
+            require input paths = FTP folder paths
         """
+        
+        '''
+            TODO:
+            filename을 FTP 형식으로 불러와야 함
+        '''
+        
+        data = ''
+        f = CONFTP.getFTP()
+        f.retrbinary(f'RESP {filename}', data)
+        if f:
+            ds = dcmread(data)
+            
+            keys = list(ds.keys())
+            ds_keys = []
+            result = '{'
 
-        if(type == 'b'):
-            f = open(paths+filename, 'rb')
-            ds = bytes(f.read())
-            f.close()
+            for v in keys:
+                ds_keys.append(str(v).replace('(', '0x').replace(', ', '').replace(')', ''))
 
-            f = open(paths+filename+'.txt', 'w')
-            f.write(str(ds))
-            f.close()
-        else:
-            ds = dcmread(paths + filename)
-            f = open(paths + filename + '.json', 'w')
-            f.write(str(ds.to_json()))
-            f.write(str(','))
-            f.write(str({'base64' : base64.b64encode(ds.pixel_array)}).replace("'", '"'))
-            f.close()
+            for i, v in enumerate(ds):
+                if i < len(keys) - 1:
+                    result = result + f'"{ds[ds_keys[i]].name}" : "{ds[ds_keys[i]].value}" , '
+                else:
+                    result = result + f'"{ds[ds_keys[i]].name}" : "{base64.b64encode(ds[ds_keys[i]].value)}"'
+            result = result + "}"
 
-        return ds
+        f.close()
+        return result
 
 
 class viewDCM:
-    """
-    Dicom Control
-    Dicom View with Dicom Header
-    Author : Okrie
-    Date : 2023-12-27
-    Ver : 0.1
-    License : MIT
-    """
-    
     @staticmethod
     def viewDCM(filename, arr):
         """
@@ -89,8 +83,8 @@ class viewDCM:
         plt.imshow(arr, cmap='gray')
         plt.show()
 
-
     # Save Pixel_data to Image File
+
     @staticmethod
     def saveTopng(filename, arr, dpi=500, type='png'):
         """
