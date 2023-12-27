@@ -43,15 +43,14 @@ class ConvertDCM:
         return result
     
     # Load pixel_data with Dicom Header
-    def loadData(self, data):
+    def loadData(self, ds):
         """
         ### DCM Convert pixel_data      
         require : fileName, i      
         i : 1 (pixel_data), 2 (Dicom Header)     
         information : Check Header data and convert pixel_data
         """
-
-        ds = dcmread(io.BytesIO(data))
+        
         if ds is None:
             raise Exception('File Exits')
         pixel_array = ds.pixel_array
