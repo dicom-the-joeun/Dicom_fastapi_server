@@ -1,9 +1,14 @@
 import matplotlib.pyplot as plt
 from pydicom import dcmread, multival
 import numpy as np
-import os
 import base64
 from pydicom import dcmread
+from ftplib import FTP
+from conf.ftp_config import FTPConfig
+
+
+# FTB Config Load
+CONFTP = FTPConfig()
 
 """
     TODO : 
@@ -15,6 +20,9 @@ from pydicom import dcmread
 """
 
 class recontrol:
+    
+    def __init__(self):
+        CONFTP.connect()
     
     # byte to ndarray
     @staticmethod
@@ -33,27 +41,36 @@ class recontrol:
     def convertPixel(filename, type='b'):
         """
             ### convertPixel
+            require input paths = FTP folder paths
         """
-
-        paths = os.path.abspath(os.path.dirname(os.path.dirname(__file__))) + '/'
         
-        if(type == 'b'):
-            f = open(paths+filename+'.dcm', 'rb')
-            ds = bytes(f.read())
-            f.close()
+        '''
+            TODO:
+            filename을 FTP 형식으로 불러와야 함
+        '''
+        
+        data = ''
+        f = CONFTP.getFTP()
+        f.retrbinary(f'RESP {filename}', data)
+        if f:
+            ds = dcmread(data)
+            
+            keys = list(ds.keys())
+            ds_keys = []
+            result = '{'
 
-            f = open(paths+filename+'.txt', 'w')
-            f.write(str(ds))
-            f.close()
-        else:
-            ds = dcmread(paths + filename + '.dcm')
-            f = open(paths + filename + '.json', 'w')
-            f.write(str(ds.to_json()))
-            f.write(str(','))
-            f.write(str({'base64' : base64.b64encode(ds.pixel_array)}).replace("'", '"'))
-            f.close()
+            for v in keys:
+                ds_keys.append(str(v).replace('(', '0x').replace(', ', '').replace(')', ''))
 
-        return ds
+            for i, v in enumerate(ds):
+                if i < len(keys) - 1:
+                    result = result + f'"{ds[ds_keys[i]].name}" : "{ds[ds_keys[i]].value}" , '
+                else:
+                    result = result + f'"{ds[ds_keys[i]].name}" : "{base64.b64encode(ds[ds_keys[i]].value)}"'
+            result = result + "}"
+
+        f.close()
+        return result
 
 
 class viewDCM:

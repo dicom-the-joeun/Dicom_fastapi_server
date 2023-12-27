@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 
 load_dotenv("./app/.env")
-FTP_SERVER = os.environ.get("FTP_SERVER")
+FTP_SERVER = os.environ.get("FTP_SERVER")   # FTP Full path
 FTP_USERNAME = os.environ.get("FTP_USERNAME")
 FTP_PASSWORD = os.environ.get('FTP_PASSWORD')
 
@@ -15,6 +15,9 @@ class FTPConfig:
         self.username = FTP_USERNAME
         self.password = FTP_PASSWORD
         self.ftp = FTP()
+        
+    def getFTP(self):
+        return self.ftp
 
     def connect(self):
         self.ftp.connect(self.host)
