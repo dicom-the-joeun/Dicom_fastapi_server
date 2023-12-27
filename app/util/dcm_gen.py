@@ -1,3 +1,11 @@
+"""
+    Dicom Control
+    Author : Okrie
+    Date : 2023-12-27
+    Ver : 0.1
+    License : MIT
+"""
+
 import matplotlib.pyplot as plt
 from pydicom import dcmread, multival
 import numpy as np
@@ -15,6 +23,14 @@ from pydicom import dcmread
 """
 
 class recontrol:
+    """
+    Dicom Control
+    pixel_data Control
+    Author : Okrie
+    Date : 2023-12-27
+    Ver : 0.1
+    License : MIT
+    """
     
     # byte to ndarray
     @staticmethod
@@ -30,15 +46,13 @@ class recontrol:
 
     # Convert Pixel data
     @staticmethod
-    def convertPixel(filename, type='b'):
+    def convertPixel(filename, type='b', paths=os.path.abspath(os.path.dirname(os.path.dirname(__file__))) + '/' ):
         """
             ### convertPixel
         """
 
-        paths = os.path.abspath(os.path.dirname(os.path.dirname(__file__))) + '/'
-        
         if(type == 'b'):
-            f = open(paths+filename+'.dcm', 'rb')
+            f = open(paths+filename, 'rb')
             ds = bytes(f.read())
             f.close()
 
@@ -46,7 +60,7 @@ class recontrol:
             f.write(str(ds))
             f.close()
         else:
-            ds = dcmread(paths + filename + '.dcm')
+            ds = dcmread(paths + filename)
             f = open(paths + filename + '.json', 'w')
             f.write(str(ds.to_json()))
             f.write(str(','))
@@ -57,6 +71,15 @@ class recontrol:
 
 
 class viewDCM:
+    """
+    Dicom Control
+    Dicom View with Dicom Header
+    Author : Okrie
+    Date : 2023-12-27
+    Ver : 0.1
+    License : MIT
+    """
+    
     @staticmethod
     def viewDCM(filename, arr):
         """
@@ -66,8 +89,8 @@ class viewDCM:
         plt.imshow(arr, cmap='gray')
         plt.show()
 
-    # Save Pixel_data to Image File
 
+    # Save Pixel_data to Image File
     @staticmethod
     def saveTopng(filename, arr, dpi=500, type='png'):
         """
