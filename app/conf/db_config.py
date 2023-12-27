@@ -3,6 +3,8 @@
 """
 
 import os
+
+from sqlalchemy import text
 from .config import db
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -14,20 +16,12 @@ DB_USER = os.environ.get('DB_USER')
 DB_PORT = os.environ.get('DB_PORT')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 DB_DATABASE = os.environ.get('DB_DATABASE')
-# DB_DNS_TNS = os.environ.get('DB_DNS_TNS')
-import oracledb
-import sys
-oracledb.version = "8.3.0"
-sys.modules["cx_Oracle"] = oracledb
 
 class DBConfig:
     # Oracle 연결을 위한 SQLAlchemy Engine 생성
     DEBUG = True
-    # SQLALCHEMY_DATABASE_URL = f'{DB_URI}{DB_USER}:{DB_PASSWORD}@{DB_DNS_TNS}' 
     SQLALCHEMY_DATABASE_URL = f'{DB_URI}{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_DATABASE}' 
-    # SQLALCHEMY_DATABASE_URL = 'oracle+oracledb://pacsplus:pacsplus@192.168.30.70:1521/?service_name=XEPD81'
 
-    #+'?charset=utf8'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     engine = db.create_engine(SQLALCHEMY_DATABASE_URL)
 
