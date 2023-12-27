@@ -4,7 +4,7 @@ from fastapi import security
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from app.conf.DBConfig import DBConfig
+from app.conf.db_config import DBConfig
 from app.models.api_model import SelectPatient
 from app.models.db_model import PatientTab
 from app.services.patient_service import PatientService

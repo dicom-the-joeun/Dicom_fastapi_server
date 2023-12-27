@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
-from app.controller import paitent_ctrl
+from app.controller import patient_ctrl
 
 
 router = APIRouter()
 
 router.include_router(
-    paitent_ctrl.router,
+    patient_ctrl.router,
     prefix="/paitent",
     tags=["paitent"]
 )

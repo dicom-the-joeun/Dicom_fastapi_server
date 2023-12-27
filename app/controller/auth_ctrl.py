@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette import status
 
-from app.conf.DBConfig import DBConfig
+from app.conf.db_config import DBConfig
 from app.services.user_service import UserService
 from app.util.pw_hash import verify_pw
 from app.util.token_gen import create_access_token, create_refresh_token, verify_access_token, verify_refresh_token

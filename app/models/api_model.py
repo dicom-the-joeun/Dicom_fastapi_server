@@ -24,9 +24,9 @@ class SelectPatient(BaseModel):
     DELFLAG : str
     INSERTED : str
     UPDATED : str
-    RESERVED1 : int
-    RESERVED2: int
-    RESERVED3 : int
+    RESERVED1 : Optional[int] = None
+    RESERVED2: Optional[int] = None
+    RESERVED3 : Optional[int] = None
     RESERVED4 : str
     RESERVED5 : str
     RESERVED6 : str
