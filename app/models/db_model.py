@@ -49,6 +49,7 @@ class User(Base):
     PHONE = Column(Text)
     PROFILE = Column(Text)
     USERNAME = Column(Text)
+    # RefreshToken = Column(Text)
 
 class StudyTab(Base):
     __tablename__ = 'studytab'
@@ -232,3 +233,4 @@ class StudyTab(Base):
     NON_SERIES_COUNT = Column(Text)
     OPEN_STATUS = Column(Text)
     OTHER_SCP_SEND_STATUS = Column(Integer)
+

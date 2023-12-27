@@ -1,5 +1,6 @@
 
 
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -33,3 +34,10 @@ class SelectPatient(BaseModel):
     RESERVED8 : str
     RESERVED9 : str
     RESERVED10 : str
+
+class TokenData(BaseModel):
+    ID: Optional[str] = None
+
+class CreateUser(BaseModel):
+    ID: str
+    PASSWORD: str
