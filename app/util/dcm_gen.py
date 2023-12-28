@@ -8,10 +8,13 @@
     Lisence : MIT
 '''
 
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 import base64, io
 from pydicom import dcmread, multival
+import pydicom
+from PIL import Image
 
 
 class ConvertDCM:
@@ -20,27 +23,45 @@ class ConvertDCM:
         FTP -> binarydata -> ds -> toJSON
     '''
     # Convert Pixel data
-    def dicomToJSON(self, data):
-        """
-            ### convertPixel
-            require input paths = FTP folder paths
-        """
-        ds = dcmread(io.BytesIO(data))
-        keys = list(ds.keys())
-        ds_keys = []
-        result = '{'
+    # def dicomToJSON(self, data):
+    #     """
+    #         ### convertPixel
+    #         require input paths = FTP folder paths
+    #     """
+    #     ds = dcmread(io.BytesIO(data))
+    #     keys = list(ds.keys())
+    #     ds_keys = []
+    #     result = '{'
 
-        for v in keys:
-            ds_keys.append(str(v).replace('(', '0x').replace(', ', '').replace(')', ''))
+    #     for v in keys:
+    #         ds_keys.append(str(v).replace('(', '0x').replace(', ', '').replace(')', ''))
 
-        for i, v in enumerate(ds):
-            if i < len(keys) - 1:
-                result = result + f'"{ds[ds_keys[i]].name}" : "{ds[ds_keys[i]].value}" , '
-            else:
-                result = result + f'"{ds[ds_keys[i]].name}" : "{base64.b64encode(self.loadData(ds))}"'
-        result = result + "}"
+    #     for i, v in enumerate(ds):
+    #         if i < len(keys) - 1:
+    #             result = result + f'"{ds[ds_keys[i]].name}" : "{ds[ds_keys[i]].value}" , '
+    #         else:
+    #             result = result + f'"{ds[ds_keys[i]].name}" : "{base64.b64encode(self.loadData(ds))}"'
+    #     result = result + "}"
         
-        return result
+    #     return result
+    
+    def dicomToJSON(self, data):
+        ds = pydicom.dcmread(io.BytesIO(data))
+
+        pixel_array = ds.pixel_array
+        image = Image.fromarray(pixel_array)
+        result = {}
+        buffered = io.BytesIO()
+        image.save(buffered, format="PNG")
+        png_bytes = buffered.getvalue()
+        base64_encoded = base64.b64encode(png_bytes).decode('utf-8')
+        for elem in ds:
+            if elem.name == "Pixel Data":
+                result[elem.name] = base64_encoded
+            else:
+                result[elem.name] = str(elem.value)
+
+        return json.dumps(result)
     
     # Load pixel_data with Dicom Header
     def loadData(self, ds):
