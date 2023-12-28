@@ -13,10 +13,9 @@ router = APIRouter()
 db = DBConfig()
 
 
-@router.get("/", response_model=List[SelectPatient])
+@router.get("/")
 async def get_dcm(filepath: str, filename: str):
     patients = DcmService.get_dcm(filepath, filename)
-    print(patients)
     if not patients:
         raise HTTPException(status_code=404, detail="Patients not found")
     return JSONResponse(content=patients, status_code=status.HTTP_200_OK)
