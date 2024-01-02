@@ -60,15 +60,15 @@ class ConvertDCM:
             logging.error(f"이미지 문제 발생 {e}")
             base64_encoded = "None"
         finally:
-            result = {}
-            for elem in ds:
-                if elem.name == "Pixel Data":
-                    result[elem.name] = base64_encoded
-                else:
-                    result[elem.name] = str(elem.value)
-            return json.dumps(result)
+            # result = {}
+            # for elem in ds:
+            #     if elem.name == "Pixel Data":
+            #         result[elem.name] = base64_encoded
+            #     else:
+            #         result[elem.name] = str(elem.value)
+            # return json.dumps(result)
 
-            # return self.get_front(ds, base64_encoded)
+            return self.get_front(ds, base64_encoded)
 
     def get_front(self, ds, base64_encoded):
         """

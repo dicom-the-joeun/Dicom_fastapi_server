@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.controller import (patient_ctrl, auth_ctrl, user_ctrl, dcm_ctrl)
+from app.controller import (patient_ctrl, auth_ctrl, study_ctrl, user_ctrl, dcm_ctrl)
 
 
 router = APIRouter()
@@ -27,4 +27,10 @@ router.include_router(
     dcm_ctrl.router,
     prefix="/dcm",
     tags=["dcm"]
+)
+
+router.include_router(
+    study_ctrl.router,
+    prefix="/studies",
+    tags=["studies"]
 )
