@@ -4,6 +4,18 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class SelectStudyViewTab(BaseModel):
+    PID : str
+    PNAME : str
+    MODALITY : str
+    STUDYDESC : Optional[str] = ""
+    STUDYDATE : int
+    REPORTSTATUS : int
+    SERIESCNT : int
+    IMAGECNT : int
+    EXAMSTATUS : int
+
+
 class SelectPatient(BaseModel):
     PID: Optional[str] = None
     PNAME: Optional[str] = None
@@ -35,8 +47,10 @@ class SelectPatient(BaseModel):
     RESERVED9: Optional[str] = None
     RESERVED10: Optional[str] = None
 
+
 class TokenData(BaseModel):
     ID: Optional[str] = None
+
 
 class CreateUser(BaseModel):
     ID: str
