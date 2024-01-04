@@ -1,7 +1,7 @@
-from io import BytesIO
 from app.conf.ftp_config import FTPConfig
+from app.models.api_model import SelectThumbnail
 from app.util.dcm_gen import ConvertDCM
-
+from typing import List
 ftp = FTPConfig()
 
 
@@ -17,3 +17,8 @@ class DcmService:
         finally:
             ftp.disconnect()
             return conv.dicomToJSON(data)
+        
+    @staticmethod
+    def get_dcm_thumbnail(db) -> List[SelectThumbnail]:
+        # TODO: thumbnail 빌드 만들었다.
+        thumbnail = db.query()

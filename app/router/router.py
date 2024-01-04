@@ -25,8 +25,8 @@ router.include_router(
 
 router.include_router(
     dcm_ctrl.router,
-    prefix="/dcm",
-    tags=["dcm"]
+    prefix="/dcms",
+    tags=["dcms"]
 )
 
 router.include_router(
