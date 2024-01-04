@@ -15,6 +15,11 @@ class SelectStudyViewTab(BaseModel):
     IMAGECNT : int
     EXAMSTATUS : int
 
+class SelectThumbnail(BaseModel):
+    SERIESKEY : int
+    SERIESDESC : Optional[str] = "N\A"
+    BASE64IMAGE : str
+
 
 class SelectPatient(BaseModel):
     PID: Optional[str] = None

@@ -9,16 +9,11 @@
 '''
 
 from PIL import Image
-import pydicom
+import pydicom 
 import io
 import json
 import logging
-import matplotlib.pyplot as plt
-from pydicom import dcmread, multival
-import numpy as np
-import os
 import base64
-from pydicom import dcmread
 
 """
     TODO : 
@@ -51,24 +46,19 @@ class ConvertDCM:
         # Number of Frames가 있으면 [0]만 가져온다.
         try:
             pixel_array = ds.pixel_array[0]
-            image = Image.fromarray(pixel_array)
-            buffered = io.BytesIO()
-            image.save(buffered, format="PNG")
-            png_bytes = buffered.getvalue()
-            base64_encoded = base64.b64encode(png_bytes).decode('utf-8')
+            base64_encoded = self.make_image(pixel_array)
         except Exception as e:
             logging.error(f"이미지 문제 발생 {e}")
             base64_encoded = "None"
         finally:
-            # result = {}
-            # for elem in ds:
-            #     if elem.name == "Pixel Data":
-            #         result[elem.name] = base64_encoded
-            #     else:
-            #         result[elem.name] = str(elem.value)
-            # return json.dumps(result)
-
             return self.get_front(ds, base64_encoded)
+
+    def make_image(self, pixel_array):
+        image = Image.fromarray(pixel_array)
+        buffered = io.BytesIO()
+        image.save(buffered, format="PNG")
+        png_bytes = buffered.getvalue()
+        return base64.b64encode(png_bytes).decode('utf-8')
 
     def get_front(self, ds, base64_encoded):
         """
@@ -76,8 +66,8 @@ class ConvertDCM:
         @Params : fname -> SC 판단 후, Slice Score를 뱉어냄
         """
         result = {}
-        info_list = ["Patient ID", "Patient's Name", "Patient's Birth Date", "Series Number", "Study Date", "Study Time", "Image Comments",
-                     "Manufacturer", "Manufacturer's Model Name", "Rows", "Columns", "Window Width", "Window Center", "Operator's Name"]
+        info_list = ["Patient ID", "Patient's Name", "Patient's Birth Date", "Series Number", "Study Date", "Study Time", "Image Comments", "Series Description",
+                    "Manufacturer", "Manufacturer's Model Name", "Rows", "Columns", "Window Width", "Window Center", "Operator's Name"]
 
         for elem in ds:
             if elem.name == "Pixel Data":

@@ -50,19 +50,10 @@ class PatientTab(Base):
     RESERVED10 = Column(String(255))
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = 'v_user'
 
     ID = Column(Text, primary_key=True)
-    BIRTH = Column(Text)
-    COUNTRY = Column(Text)
-    EMAIL = Column(Text)
-    GENDER = Column(Text)
-    NAME = Column(Text)
     PASSWORD = Column(Text)
-    PHONE = Column(Text)
-    PROFILE = Column(Text)
-    USERNAME = Column(Text)
-    REFRESHTOKEN = Column(Text)
 
 class StudyTab(Base):
     __tablename__ = 'studytab'
