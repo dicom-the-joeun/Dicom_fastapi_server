@@ -20,16 +20,17 @@ db = DBConfig()
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(db.get_db)):
     user = UserService.exisiting_user(
         ID=form_data.username, db=db)  # ID로 사용자를 가져옴
+    print(user.PASSWORD)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="존재하는 아이디가 없습니다.")
 
-    if not verify_pw(form_data.password, user.password):
+    if not verify_pw(form_data.password, user.PASSWORD):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="비밀번호 틀림")
 
-    access_token = create_access_token(user.id)  # 토큰 생성
-    refresh_token = create_refresh_token(user.id)
+    access_token = create_access_token(user.ID)  # 토큰 생성
+    refresh_token = create_refresh_token(user.ID)
     try:
         headers = {
             "access_token": access_token,
