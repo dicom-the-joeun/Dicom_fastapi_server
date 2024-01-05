@@ -1,10 +1,11 @@
 import json
-from typing import List
+from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException
+from app.conf.config import security
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from starlette import status
-
+from fastapi.security import HTTPAuthorizationCredentials
 from app.conf.db_config import DBConfig
 from app.models.api_model import SelectThumbnail
 from app.services.dcm_service import DcmService
@@ -15,7 +16,7 @@ db = DBConfig()
 
 
 @router.get("/image")
-async def get_dcm_test(filepath: str, filename: str):
+async def get_dcm_image(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],filepath: str, filename: str):
     image = DcmService.get_dcm_img(filepath, filename)
     if not image:
         raise HTTPException(status_code=404, detail="Patients not found")
