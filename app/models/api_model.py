@@ -66,5 +66,6 @@ class SelectThumbnail(BaseModel):
     SERIESKEY : int
     SERIESDESC : Optional[str] = None
     SCORE : Optional[str] = None
+    IMAGECNT : int
     PATH : str
     FNAME : str

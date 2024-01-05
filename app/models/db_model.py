@@ -28,6 +28,7 @@ class SeriesTab(Base):
     STUDYKEY = Column(Integer, primary_key=True)
     SERIESKEY = Column(Integer, primary_key=True)
     SERIESDESC = Column(Text)
+    IMAGECNT = Column(Integer)
     PATH = Column(Text)
     FNAME = Column(Text)
 
