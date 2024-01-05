@@ -15,45 +15,22 @@ class StudyViewTab(Base):
     SERIESCNT = Column(Integer)
     IMAGECNT = Column(Integer)
     EXAMSTATUS = Column(String)
-    
-class PatientTab(Base):
-    __tablename__ = 'PATIENTTAB'
-
-    PID = Column(String(64), primary_key=True)
-    PNAME = Column(String(64), nullable=False)
-    PATKEY = Column(String(64))
-    PATIENTKEY = Column(Integer)
-    PLASTNAME = Column(String(64))
-    PFIRSTNAME = Column(String(64))
-    PSEX = Column(String(2))
-    PBIRTHDATE = Column(String(8))
-    PBIRTHTIME = Column(String(8))
-    COMMENTS = Column(String(64))
-    INSERTDATE = Column(String(8))
-    INSERTTIME = Column(String(8))
-    HOSPITALID = Column(Integer, default=0)
-    PKNAME = Column(String(64))
-    PENAME = Column(String(64))
-    INSNAME = Column(String(255))
-    DELFLAG = Column(Integer)
-    INSERTED = Column(String(14))
-    UPDATED = Column(String(14))
-    RESERVED1 = Column(Integer)
-    RESERVED2 = Column(Integer)
-    RESERVED3 = Column(Integer)
-    RESERVED4 = Column(String(255))
-    RESERVED5 = Column(String(255))
-    RESERVED6 = Column(String(255))
-    RESERVED7 = Column(String(255))
-    RESERVED8 = Column(String(255))
-    RESERVED9 = Column(String(255))
-    RESERVED10 = Column(String(255))
 
 class User(Base):
     __tablename__ = 'V_USER'
 
     ID = Column(Text, primary_key=True)
     PASSWORD = Column(Text)
+
+class SeriesTab(Base):
+    __tablename__ = 'V_SERIESTAB'
+
+    STUDYKEY = Column(Integer, primary_key=True)
+    SERIESKEY = Column(Integer, primary_key=True)
+    SERIESDESC = Column(Text)
+    PATH = Column(Text)
+    FNAME = Column(Text)
+
 
 class StudyTab(Base):
     __tablename__ = 'studytab'
@@ -238,3 +215,38 @@ class StudyTab(Base):
     OPEN_STATUS = Column(Text)
     OTHER_SCP_SEND_STATUS = Column(Integer)
 
+
+
+
+class PatientTab(Base):
+    __tablename__ = 'PATIENTTAB'
+
+    PID = Column(String(64), primary_key=True)
+    PNAME = Column(String(64), nullable=False)
+    PATKEY = Column(String(64))
+    PATIENTKEY = Column(Integer)
+    PLASTNAME = Column(String(64))
+    PFIRSTNAME = Column(String(64))
+    PSEX = Column(String(2))
+    PBIRTHDATE = Column(String(8))
+    PBIRTHTIME = Column(String(8))
+    COMMENTS = Column(String(64))
+    INSERTDATE = Column(String(8))
+    INSERTTIME = Column(String(8))
+    HOSPITALID = Column(Integer, default=0)
+    PKNAME = Column(String(64))
+    PENAME = Column(String(64))
+    INSNAME = Column(String(255))
+    DELFLAG = Column(Integer)
+    INSERTED = Column(String(14))
+    UPDATED = Column(String(14))
+    RESERVED1 = Column(Integer)
+    RESERVED2 = Column(Integer)
+    RESERVED3 = Column(Integer)
+    RESERVED4 = Column(String(255))
+    RESERVED5 = Column(String(255))
+    RESERVED6 = Column(String(255))
+    RESERVED7 = Column(String(255))
+    RESERVED8 = Column(String(255))
+    RESERVED9 = Column(String(255))
+    RESERVED10 = Column(String(255))
