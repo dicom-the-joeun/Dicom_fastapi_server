@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 
 class SelectStudyViewTab(BaseModel):
+    STUDYKEY : int
     PID : str
     PNAME : str
     MODALITY : str
