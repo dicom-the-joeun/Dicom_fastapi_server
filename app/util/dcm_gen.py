@@ -9,58 +9,19 @@
 '''
 
 from PIL import Image
+import numpy as np
 import pydicom 
 import io
 import json
 import logging
 import base64
-
-"""
-    TODO : 
-    1) .dcm -> .JSON
-     ** 단일 책임, 구분을 위해, FTP 연결은 dcm_service 진행.
-     ** 앞단, 데이터 전송은 여기서 하는 것이 아닌, dcm_ctrl.
-    
-    ## 일단, 의존성 설치는 끝마쳤고, DICOMTOPNG proj에서 Method 만 복붙함.
-"""
-
-'''
-    Convert Dicom
-    FTP -> binarydata -> ds -> toJSON
-    Description : FTP에서 받은 binary data -> ds로 JSON 직렬화
-    Author : Okrie, Oh-Kang94
-    Ver : 0.1
-    Site : https://github.com/Okrie/DicomToPng
-    Lisence : MIT
-'''
+from pydicom.pixel_data_handlers.util import apply_voi_lut
 
 
 class ConvertDCM:
-    '''
-        Convert Dicom
-        FTP -> binarydata -> ds -> toJSON
-    '''
 
     def dicomToJSON(self, data):
         ds = pydicom.dcmread(io.BytesIO(data))
-        # Number of Frames가 있으면 [0]만 가져온다.
-        try:
-            pixel_array = ds.pixel_array[0]
-            base64_encoded = self.make_image(pixel_array)
-        except Exception as e:
-            logging.error(f"이미지 문제 발생 {e}")
-            base64_encoded = "None"
-        finally:
-            return self.get_front(ds, base64_encoded)
-
-    def make_image(self, pixel_array):
-        image = Image.fromarray(pixel_array)
-        buffered = io.BytesIO()
-        image.save(buffered, format="PNG")
-        png_bytes = buffered.getvalue()
-        return base64.b64encode(png_bytes).decode('utf-8')
-
-    def get_front(self, ds, base64_encoded):
         """
         ### Front Info for list
         @Params : fname -> SC 판단 후, Slice Score를 뱉어냄
@@ -70,8 +31,20 @@ class ConvertDCM:
                     "Manufacturer", "Manufacturer's Model Name", "Rows", "Columns", "Window Width", "Window Center", "Operator's Name"]
 
         for elem in ds:
-            if elem.name == "Pixel Data":
-                result[elem.name] = base64_encoded
-            elif elem.name in info_list:
+            if elem.name in info_list:
                 result[elem.name] = str(elem.value)
         return json.dumps(result)
+    
+    def dicomToPNG(self, data):
+        ds = pydicom.dcmread(io.BytesIO(data))
+        new_image = ds.pixel_array.astype(float)
+        # normalization 작업
+        scaled_image = (np.maximum(new_image, 0) / new_image.max()) * 255.0
+        scaled_image = np.uint8(scaled_image)
+        # 흑백 반전 작업
+        # scaled_image = 255 - scaled_image
+        img = Image.fromarray(scaled_image)
+        img_io = io.BytesIO()
+        img.save(img_io, 'PNG', quality=70)
+        img_io.seek(0)  # BytesIO의 커서를 처음으로 이동
+        return img_io

@@ -60,3 +60,10 @@ class TokenData(BaseModel):
 class CreateUser(BaseModel):
     ID: str
     PASSWORD: str
+
+class SelectThumbnail(BaseModel):
+    SERIESKEY : int
+    SERIESDESC : Optional[str] = None
+    SCORE : Optional[str] = None
+    PATH : str
+    FNAME : str
