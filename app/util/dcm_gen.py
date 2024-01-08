@@ -32,7 +32,13 @@ class ConvertDCM:
 
         for elem in ds:
             if elem.name in info_list:
-                result[elem.name] = str(elem.value)
+                if elem.name == "Window Width":
+                    width_value = elem.value if elem.value is not None else 0
+                    result[elem.name] = str(width_value)
+                elif elem.name == "Window Center" and elem.value is None:
+                    result[elem.name] = str(1)
+                else:
+                    result[elem.name] = str(elem.value)
         return json.dumps(result)
     
     def dicomToPNG(self, data):
