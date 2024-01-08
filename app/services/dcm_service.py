@@ -41,5 +41,5 @@ class DcmService:
 
     @staticmethod
     async def get_seriestab_one(studykey, serieskey, db) -> List[SelectSereies]:
-        image_fname_all = db.query(ImageViewTab.IMAGEKEY, ImageViewTab.FNAME).filter(ImageViewTab.STUDYKEY==studykey, ImageViewTab.SERIESKEY==serieskey).all()
-        return [SelectSereies(IMAGEKEY=row.IMAGEKEY, FNAME=row.FNAME) for row in image_fname_all]
+        image_fname_all = db.query(ImageViewTab.IMAGEKEY, ImageViewTab.PATH, ImageViewTab.FNAME).filter(ImageViewTab.STUDYKEY==studykey, ImageViewTab.SERIESKEY==serieskey).all()
+        return [SelectSereies(IMAGEKEY=row.IMAGEKEY, PATH= row.PATH, FNAME=row.FNAME) for row in image_fname_all]
