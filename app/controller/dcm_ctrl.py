@@ -38,15 +38,16 @@ async def get_thumbnail(studykey: int, db: Session = Depends(db.get_db)):
             SCORE = json_dcm["Image Comments"]
         else:
             SCORE = None
-        result = SelectThumbnail(
+        result_by_one = SelectThumbnail(
             SERIESKEY=thumbnail.SERIESKEY,
             SERIESDESC=thumbnail.SERIESDESC,
             SCORE=SCORE,
             IMAGECNT=thumbnail.IMAGECNT,
             PATH=thumbnail.PATH,
-            FNAME=thumbnail.FNAME
+            FNAME=thumbnail.FNAME,
+            HEADERS= json.dumps(json_dcm)
         ).dict()
-        results.append(result)
+        results.append(result_by_one)
     return JSONResponse(content=results, status_code=status.HTTP_200_OK)
 
 
