@@ -1,7 +1,7 @@
 import json
 from app.conf.ftp_config import FTPConfig
-from app.models.api_model import SelectThumbnail
-from app.models.db_model import SeriesTab
+from app.models.api_model import SelectSereies, SelectThumbnail
+from app.models.db_model import ImageViewTab, SeriesTab
 from app.util.dcm_gen import ConvertDCM
 from typing import List
 ftp = FTPConfig()
@@ -34,7 +34,12 @@ class DcmService:
             return conv.dicomToPNG(data)
 
     @staticmethod
-    async def get_dcm_thumbnails(studykey, db) -> List[SelectThumbnail]:
+    async def get_seriestab_all_studykey(studykey, db) -> List[SelectThumbnail]:
         thumbnails = db.query(SeriesTab).filter(
             SeriesTab.STUDYKEY == studykey).all()
         return thumbnails
+
+    @staticmethod
+    async def get_seriestab_one(studykey, serieskey, db) -> List[SelectSereies]:
+        image_fname_all = db.query(ImageViewTab.IMAGEKEY, ImageViewTab.FNAME).filter(ImageViewTab.STUDYKEY==studykey, ImageViewTab.SERIESKEY==serieskey).all()
+        return [SelectSereies(IMAGEKEY=row.IMAGEKEY, FNAME=row.FNAME) for row in image_fname_all]

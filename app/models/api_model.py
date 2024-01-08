@@ -69,3 +69,7 @@ class SelectThumbnail(BaseModel):
     IMAGECNT : int
     PATH : str
     FNAME : str
+
+class SelectSereies(BaseModel):
+    IMAGEKEY : int
+    FNAME : str
