@@ -72,4 +72,5 @@ class SelectThumbnail(BaseModel):
 
 class SelectSereies(BaseModel):
     IMAGEKEY : int
+    PATH : str
     FNAME : str

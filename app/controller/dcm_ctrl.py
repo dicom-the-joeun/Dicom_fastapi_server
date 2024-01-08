@@ -1,6 +1,7 @@
 import json
 from typing import Annotated, List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi.encoders import jsonable_encoder
 from app.conf.config import security
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.orm import Session
@@ -20,7 +21,7 @@ async def get_dcm_image(credentials: Annotated[HTTPAuthorizationCredentials, Dep
     image = DcmService.get_dcm_img(filepath, filename)
     if not image:
         raise HTTPException(status_code=404, detail="Patients not found")
-    return StreamingResponse(image, media_type="image/png")
+    return StreamingResponse(image, media_type="image/png", status_code=status.HTTP_200_OK)
 
 
 @router.get("/thumbnails", response_model=List[SelectThumbnail])
@@ -51,4 +52,10 @@ async def get_thumbnail(studykey: int, db: Session = Depends(db.get_db)):
 
 @router.get("/details", description="시리즈에서 이미지랑 모든 Header가져오기")
 async def get_details(studykey: int, serieskey: int, db: Session = Depends(db.get_db)):
-    return await DcmService.get_seriestab_one(studykey=studykey, serieskey=serieskey, db=db)
+    result = await DcmService.get_seriestab_one(studykey=studykey, serieskey=serieskey, db=db)
+    json_data = DcmService.get_dcm_json(filepath=result[0].PATH,
+                                        filename=result[0].FNAME)
+    result_json = json.loads(json_data)
+    result = jsonable_encoder(result)
+    result_json['result'] = result
+    return JSONResponse(content=result_json, status_code=status.HTTP_200_OK)
