@@ -33,6 +33,15 @@ class SeriesTab(Base):
     FNAME = Column(Text)
 
 
+class ImageViewTab(Base):
+    __tablename__ = 'V_IMAGETAB'
+
+    STUDYKEY = Column(Integer, primary_key=True)
+    SERIESKEY = Column(Integer, primary_key=True)
+    IMAGEKEY = Column(Integer)
+    PATH = Column(Text)
+    FNAME = Column(Text)
+
 class StudyTab(Base):
     __tablename__ = 'studytab'
 
