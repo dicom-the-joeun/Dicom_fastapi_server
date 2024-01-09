@@ -43,7 +43,11 @@ class ConvertDCM:
     
     def dicomToPNG(self, data):
         ds = pydicom.dcmread(io.BytesIO(data))
-        new_image = ds.pixel_array[0].astype(float)
+        # new_image = ds.pixel_array[0].astype(float)
+        if len(ds.pixel_array.shape) == 3:  # 3차원 배열인 경우
+            new_image = ds.pixel_array[0].astype(float)
+        else:
+            new_image = ds.pixel_array.astype(float)
         # normalization 작업
         scaled_image = (np.maximum(new_image, 0) / new_image.max()) * 255.0
         scaled_image = np.uint8(scaled_image)
