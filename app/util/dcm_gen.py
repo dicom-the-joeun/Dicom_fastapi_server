@@ -27,7 +27,7 @@ class ConvertDCM:
         @Params : fname -> SC 판단 후, Slice Score를 뱉어냄
         """
         result = {}
-        info_list = ["Patient ID", "Patient's Name", "Patient's Birth Date", "Series Number", "Study Date", "Study Time", "Image Comments", "Series Description", "Number of Frames"
+        info_list = ["Patient ID", "Patient's Name", "Patient's Birth Date", "Series Number", "Study Date", "Study Time", "Image Comments", "Series Description", "Number of Frames",
                      "Manufacturer", "Manufacturer's Model Name", "Rows", "Columns", "Window Width", "Window Center", "Operator's Name"]
         for elem in ds:
             if elem.name in info_list:
