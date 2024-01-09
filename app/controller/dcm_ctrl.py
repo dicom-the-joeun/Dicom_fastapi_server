@@ -10,6 +10,8 @@ from fastapi.security import HTTPAuthorizationCredentials
 from app.conf.db_config import DBConfig
 from app.models.api_model import SelectThumbnail
 from app.services.dcm_service import DcmService
+from app.services.user_service import UserService
+from app.util.token_gen import verify_access_token
 
 
 router = APIRouter()
@@ -17,10 +19,14 @@ db = DBConfig()
 
 
 @router.get("/image")
-async def get_dcm_image(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)], filepath: str, filename: str):
+async def get_dcm_image(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)], filepath: str, filename: str, db: Session = Depends(db.get_db)):
+    print(credentials.credentials)
+    id = verify_access_token(credentials.credentials)
+    if not UserService.exisiting_user(id, db):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot find user")
     image = DcmService.get_dcm_img(filepath, filename)
     if not image:
-        raise HTTPException(status_code=404, detail="Patients not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patients not found")
     return StreamingResponse(image, media_type="image/png", status_code=status.HTTP_200_OK)
 
 
