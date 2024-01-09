@@ -43,8 +43,12 @@ class ConvertDCM:
     
     def dicomToPNG(self, data):
         ds = pydicom.dcmread(io.BytesIO(data))
+        print(ds.pixel_array.shape)
         # new_image = ds.pixel_array[0].astype(float)
-        if len(ds.pixel_array.shape) == 3:  # 3차원 배열인 경우
+        if len(ds.pixel_array.shape) == 4:  # 4차원 배열인 경우
+            new_image = ds.pixel_array.astype(float)
+            new_image = np.reshape(ds.pixel_array[0, :, :, 0], (-1, ds.pixel_array.shape[2]))
+        elif len(ds.pixel_array.shape) == 3:  # 3차원 배열인 경우
             new_image = ds.pixel_array[0].astype(float)
         else:
             new_image = ds.pixel_array.astype(float)
