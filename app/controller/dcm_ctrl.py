@@ -19,11 +19,11 @@ db = DBConfig()
 
 
 @router.get("/image")
-async def get_dcm_image(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)], filepath: str, filename: str, db: Session = Depends(db.get_db)):
+async def get_dcm_image(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)], filepath: str, filename: str, index: int = 0, db: Session = Depends(db.get_db)):
     id = verify_access_token(credentials.credentials)
     if not UserService.exisiting_user(id, db):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot find user")
-    image = DcmService.get_dcm_img(filepath, filename)
+    image = DcmService.get_dcm_img(filepath, filename, index)
     if not image:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patients not found")
     return StreamingResponse(image, media_type="image/png", status_code=status.HTTP_200_OK)
