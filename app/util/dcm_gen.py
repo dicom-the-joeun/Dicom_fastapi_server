@@ -38,6 +38,8 @@ class ConvertDCM:
                     result[elem.name] = str(1)
                 else:
                     result[elem.name] = str(elem.value)
+        if "Number of Frames" not in result:
+            result["Number of Frames"] = str(1)
         if len(ds.pixel_array.shape) == 4:
             pixel_array_shape = 4
         elif len(ds.pixel_array.shape) == 3:
