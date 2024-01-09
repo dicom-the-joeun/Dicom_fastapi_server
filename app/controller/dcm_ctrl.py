@@ -20,7 +20,6 @@ db = DBConfig()
 
 @router.get("/image")
 async def get_dcm_image(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)], filepath: str, filename: str, db: Session = Depends(db.get_db)):
-    print(credentials.credentials)
     id = verify_access_token(credentials.credentials)
     if not UserService.exisiting_user(id, db):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot find user")

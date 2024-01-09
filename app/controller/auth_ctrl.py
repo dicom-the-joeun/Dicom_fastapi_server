@@ -2,10 +2,10 @@ import logging
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import HTTPAuthorizationCredentials, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette import status
-
+from app.conf.config import security
 from app.conf.db_config import DBConfig
 from app.services.user_service import UserService
 from app.util.pw_hash import verify_pw
@@ -44,8 +44,10 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 
 
 @router.get('/refresh', description="Access 토큰 가져오기")
-async def get_access_from_refresh(refresh_token: Annotated[str, Header()], db: Session = Depends(db.get_db)):
-    id = verify_refresh_token(refresh_token)
+async def get_access_from_refresh(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)], db: Session = Depends(db.get_db)):
+    id = verify_refresh_token(credentials.credentials)
+    if not UserService.exisiting_user(id, db):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot find user")
     access_token = create_access_token(id)
     return JSONResponse(content={"result": "Create Access Token"}, status_code=status.HTTP_200_OK, headers={"access_token": access_token})
 
