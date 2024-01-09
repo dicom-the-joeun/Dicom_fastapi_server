@@ -10,7 +10,7 @@
 
 from PIL import Image
 import numpy as np
-import pydicom 
+import pydicom
 import io
 import json
 import logging
@@ -27,9 +27,8 @@ class ConvertDCM:
         @Params : fname -> SC 판단 후, Slice Score를 뱉어냄
         """
         result = {}
-        info_list = ["Patient ID", "Patient's Name", "Patient's Birth Date", "Series Number", "Study Date", "Study Time", "Image Comments", "Series Description",
-                    "Manufacturer", "Manufacturer's Model Name", "Rows", "Columns", "Window Width", "Window Center", "Operator's Name"]
-
+        info_list = ["Patient ID", "Patient's Name", "Patient's Birth Date", "Series Number", "Study Date", "Study Time", "Image Comments", "Series Description", "Number of Frames"
+                     "Manufacturer", "Manufacturer's Model Name", "Rows", "Columns", "Window Width", "Window Center", "Operator's Name"]
         for elem in ds:
             if elem.name in info_list:
                 if elem.name == "Window Width":
@@ -39,17 +38,23 @@ class ConvertDCM:
                     result[elem.name] = str(1)
                 else:
                     result[elem.name] = str(elem.value)
+        if len(ds.pixel_array.shape) == 4:
+            pixel_array_shape = 4
+        elif len(ds.pixel_array.shape) == 3:
+            pixel_array_shape = 3
+        else:
+            pixel_array_shape = 2
+        result['pixel array shape'] = str(pixel_array_shape)
         return json.dumps(result)
-    
-    def dicomToPNG(self, data):
+
+    def dicomToPNG(self, data, index=0):
         ds = pydicom.dcmread(io.BytesIO(data))
-        print(ds.pixel_array.shape)
-        # new_image = ds.pixel_array[0].astype(float)
         if len(ds.pixel_array.shape) == 4:  # 4차원 배열인 경우
             new_image = ds.pixel_array.astype(float)
-            new_image = np.reshape(ds.pixel_array[0, :, :, 0], (-1, ds.pixel_array.shape[2]))
+            new_image = np.reshape(
+                ds.pixel_array[index, :, :, 0], (-1, ds.pixel_array.shape[2]))
         elif len(ds.pixel_array.shape) == 3:  # 3차원 배열인 경우
-            new_image = ds.pixel_array[0].astype(float)
+            new_image = ds.pixel_array[index].astype(float)
         else:
             new_image = ds.pixel_array.astype(float)
         # normalization 작업

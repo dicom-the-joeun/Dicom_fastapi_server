@@ -19,10 +19,9 @@ class DcmService:
         finally:
             ftp.disconnect()
             return conv.dicomToJSON(data)
-        
 
     @staticmethod
-    def get_dcm_img(filepath, filename):
+    def get_dcm_img(filepath, filename, index=0):
         conv = ConvertDCM()
         try:
             ftp.connect()
@@ -31,7 +30,7 @@ class DcmService:
             print(f'문제는 {e}')
         finally:
             ftp.disconnect()
-            return conv.dicomToPNG(data)
+            return conv.dicomToPNG(data, index)
 
     @staticmethod
     async def get_seriestab_all_studykey(studykey, db) -> List[SelectThumbnail]:
@@ -41,5 +40,6 @@ class DcmService:
 
     @staticmethod
     async def get_seriestab_one(studykey, serieskey, db) -> List[SelectSereies]:
-        image_fname_all = db.query(ImageViewTab.IMAGEKEY, ImageViewTab.PATH, ImageViewTab.FNAME).filter(ImageViewTab.STUDYKEY==studykey, ImageViewTab.SERIESKEY==serieskey).all()
-        return [SelectSereies(IMAGEKEY=row.IMAGEKEY, PATH= row.PATH, FNAME=row.FNAME) for row in image_fname_all]
+        image_fname_all = db.query(ImageViewTab.IMAGEKEY, ImageViewTab.PATH, ImageViewTab.FNAME).filter(
+            ImageViewTab.STUDYKEY == studykey, ImageViewTab.SERIESKEY == serieskey).all()
+        return [SelectSereies(IMAGEKEY=row.IMAGEKEY, PATH=row.PATH, FNAME=row.FNAME) for row in image_fname_all]
