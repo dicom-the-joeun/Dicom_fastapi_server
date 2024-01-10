@@ -1,6 +1,5 @@
-import logging
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -9,7 +8,7 @@ from app.conf.config import security
 from app.conf.db_config import DBConfig
 from app.services.user_service import UserService
 from app.util.pw_hash import verify_pw
-from app.util.token_gen import create_access_token, create_refresh_token, verify_access_token, verify_refresh_token
+from app.util.token_gen import create_access_token, create_refresh_token, verify_refresh_token
 
 
 router = APIRouter()
@@ -47,17 +46,20 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 async def get_access_from_refresh(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)], db: Session = Depends(db.get_db)):
     id = verify_refresh_token(credentials.credentials)
     if not UserService.exisiting_user(id, db):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot find user")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot find user")
     access_token = create_access_token(id)
     return JSONResponse(content={"result": "Create Access Token"}, status_code=status.HTTP_200_OK, headers={"access_token": access_token})
 
 
-def get_id_from_token(credentials, db):
-    try:
-        id = verify_access_token(credentials)
-        if not UserService.exisiting_user(id, db):
-            raise logging.warning("침략경보")
-        return id
-    except Exception as e:
-        print(f"{e}")
-        raise
+
+def verify_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    '''
+        Access Token 검증 하는 Dependecy
+    '''
+    user_id = UserService.get_id_from_token(credentials.credentials, db)
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot find user"
+        )
+    return user_id

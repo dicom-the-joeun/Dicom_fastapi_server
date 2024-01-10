@@ -33,7 +33,6 @@ class FTPConfig:
         file_data = BytesIO()
         self.ftp.cwd("/sts01/" + filepath)
         self.ftp.retrbinary(f'RETR {filename}', file_data.write)
-        # getvalue()로 바꿈 테스트 필요
         return file_data.getvalue()
 
     def disconnect(self):

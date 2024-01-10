@@ -1,4 +1,3 @@
-import json
 from app.conf.ftp_config import FTPConfig
 from app.models.api_model import SelectSereies, SelectThumbnail
 from app.models.db_model import ImageViewTab, SeriesTab

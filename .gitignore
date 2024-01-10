@@ -168,3 +168,4 @@ start_app_debug.sh
 ./*.sh
 *.dcm
 *.json
+*.ini
