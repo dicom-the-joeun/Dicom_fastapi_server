@@ -19,7 +19,6 @@ db = DBConfig()
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(db.get_db)):
     user = UserService.exisiting_user(
         ID=form_data.username, db=db)  # ID로 사용자를 가져옴
-    print(user.PASSWORD)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="존재하는 아이디가 없습니다.")
@@ -52,8 +51,7 @@ async def get_access_from_refresh(credentials: Annotated[HTTPAuthorizationCreden
     return JSONResponse(content={"result": "Create Access Token"}, status_code=status.HTTP_200_OK, headers={"access_token": access_token})
 
 
-
-def verify_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+def verify_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(db.get_db)):
     '''
         Access Token 검증 하는 Dependecy
     '''

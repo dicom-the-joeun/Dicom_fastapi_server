@@ -1,8 +1,13 @@
+import io
 import json
+import os
+import shutil
+import tempfile
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+import zipfile
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from starlette import status
 from app.conf.db_config import DBConfig
@@ -17,6 +22,9 @@ db = DBConfig()
 
 @router.get("/image", description="이미지를 가져오는 라우트")
 async def get_dcm_image(filepath: str, filename: str, index: int = 0, _=Depends(verify_user)):
+    '''
+        Depends는 Decorator
+    '''
     image = DcmService.get_dcm_img(filepath, filename, index)
     if not image:
         raise HTTPException(
@@ -24,7 +32,44 @@ async def get_dcm_image(filepath: str, filename: str, index: int = 0, _=Depends(
         )
     return StreamingResponse(image, media_type="image/png", status_code=status.HTTP_200_OK)
 
-# 다른 라우터 함수들도 사용자 인증을 위해 위와 같은 방식으로 처리 가능
+@router.get("/image/windows", description="윈도우 조정된 이미지들을 가져오는 라우트")
+async def get_dcm_image(filepath: str, filename: str, index: int = 0, _=Depends(verify_user)):
+    images = DcmService.get_dcm_images_windowCenter(filepath, filename, index)
+    if not images:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Patients not found"
+        )
+    # 고유한 임시 디렉토리 생성
+    temp_dir = tempfile.mkdtemp()
+
+    # 이미지를 임시 디렉토리에 저장
+    for i, img in enumerate(images):
+        with open(os.path.join(temp_dir, f"image_{i}.png"), 'wb') as f:
+            f.write(img)
+
+    # zip 파일명을 고유하게 설정
+    zip_filename = os.path.join(temp_dir, 'images.zip')
+
+    # zip 파일 생성
+    zipf = zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED)
+    for root, dirs, files in os.walk(temp_dir):
+        for file in files:
+            if file != 'images.zip':  # 'images.zip' 파일은 제외하고 압축
+                zipf.write(os.path.join(root, file), arcname=file)  # arcname을 추가하여 상대 경로만 압축에 포함
+    zipf.close()
+
+    # 파일 전송이 완료된 후에 호출될 콜백 함수 정의
+    def delete_temp_dir():
+        shutil.rmtree(temp_dir)
+
+    # 파일 스트림을 반환하고, 파일 전송이 완료된 후에 콜백 함수 호출
+    return FileResponse(
+        zip_filename,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment;filename=images.zip"},
+        filename="images.zip",
+        background=BackgroundTasks().add_task(delete_temp_dir)
+    )
 
 
 @router.get("/thumbnails", response_model=List[SelectThumbnail], description="썸네일을 위한 라우트")

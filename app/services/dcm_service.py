@@ -30,6 +30,20 @@ class DcmService:
         finally:
             ftp.disconnect()
             return conv.dicomToPNG(data, index)
+        
+    @staticmethod
+    def get_dcm_images_windowCenter(filepath, filename, index=0):
+        conv = ConvertDCM()
+        images = []
+        try:
+            ftp.connect()
+            data = ftp.getdata(filepath=filepath, filename=filename)
+            images = conv.dicomToPNGs_windows(data, index)
+        except Exception as e:
+            print(f'문제는 {e}')
+        finally:
+            ftp.disconnect()
+        return images
 
     @staticmethod
     async def get_seriestab_all_studykey(studykey, db) -> List[SelectThumbnail]:
