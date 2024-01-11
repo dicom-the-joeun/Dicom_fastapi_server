@@ -13,6 +13,7 @@ import numpy as np
 import pydicom
 import io
 import json
+import cv2
 
 
 class ConvertDCM:
@@ -66,3 +67,41 @@ class ConvertDCM:
         img.save(img_io, 'PNG', quality=70)
         img_io.seek(0)  # BytesIO의 커서를 처음으로 이동
         return img_io
+
+    def dicomToPNGs_windows(self, data, index=0):
+        ds = pydicom.dcmread(io.BytesIO(data))
+        window_width = ds.WindowWidth
+        # print("window_width"+str(window_width) +
+        #       "type은 " + str(type(window_width)))
+
+        start_value = ds.WindowCenter - window_width / 2.0
+        end_value = ds.WindowCenter + window_width / 2.0
+
+        if len(ds.pixel_array.shape) == 4:  # 4차원 배열인 경우
+            new_image = ds.pixel_array.astype(float)
+            new_image = np.reshape(
+                ds.pixel_array[index, :, :, 0], (-1, ds.pixel_array.shape[2]))
+        elif len(ds.pixel_array.shape) == 3:  # 3차원 배열인 경우
+            new_image = ds.pixel_array[index].astype(float)
+        else:
+            new_image = ds.pixel_array.astype(float)
+
+        results = []
+
+        for i in range(9):
+            step = (end_value - start_value) / 9.0
+            window_center = start_value + i * step
+            # print("window_center"+str(window_center) +
+            #       "type은 " + str(type(window_center)))
+            converted_image = self.convert_file(new_image,window_center,window_width)
+            results.append(converted_image)
+        return results
+
+    def convert_file(self, img, window_center, window_width):
+        scaled_image = cv2.convertScaleAbs(
+            img - window_center, alpha=(255.0 / window_width))
+        img_from_scaled = Image.fromarray(scaled_image)
+        img_io = io.BytesIO()
+        img_from_scaled.save(img_io, 'PNG', quality=100)
+        img_io.seek(0)  # BytesIO의 커서를 처음으로 이동
+        return img_io.read()
