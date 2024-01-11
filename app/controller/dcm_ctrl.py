@@ -17,6 +17,9 @@ db = DBConfig()
 
 @router.get("/image", description="이미지를 가져오는 라우트")
 async def get_dcm_image(filepath: str, filename: str, index: int = 0, _=Depends(verify_user)):
+    '''
+        Depends는 Decorator
+    '''
     image = DcmService.get_dcm_img(filepath, filename, index)
     if not image:
         raise HTTPException(

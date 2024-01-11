@@ -51,7 +51,6 @@ def verify_access_token(token: str):
 def verify_refresh_token(token: str):
     try:
         payload = jwt.decode(token, JWT_REFRESH_KEY, algorithms=ALGORLITHM)
-        print(payload)
         id = payload.get("sub")
         if id is None:
             raise credentials_exception
