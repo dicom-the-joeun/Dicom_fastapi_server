@@ -1,3 +1,4 @@
+import json
 from app.conf.ftp_config import FTPConfig
 from app.models.api_model import SelectSereies, SelectThumbnail
 from app.models.db_model import ImageViewTab, SeriesTab
@@ -30,7 +31,34 @@ class DcmService:
         finally:
             ftp.disconnect()
             return conv.dicomToPNG(data, index)
-        
+
+    @staticmethod
+    async def get_dcm_img_compressed(studykey, serieskey, db):
+        '''
+            이미지들을 반환해야함.
+            @return : images `list`
+
+            TODO: 3차원 4차원 예외 처리 필요!
+        '''
+        conv = ConvertDCM()
+        images = []
+        result = await DcmService.get_seriestab_one(studykey, serieskey, db)
+        json_data =  json.loads(DcmService.get_dcm_json(filepath=result[0].PATH,
+                                      filename=result[0].FNAME))
+        print("jsondata", json_data)
+        print(json_data["pixel array shape"])
+        if json_data["pixel array shape"] == "2":
+            try:
+                ftp.connect()
+                for one_result in result:
+                    data = ftp.getdata(one_result.PATH, one_result.FNAME)
+                    images.append(conv.dicomToPNG(data, 0))
+            except Exception as e:
+                print(f'문제는 {e}')
+            finally:
+                ftp.disconnect()
+            return images
+
     @staticmethod
     def get_dcm_images_windowCenter(filepath, filename, index=0):
         conv = ConvertDCM()
