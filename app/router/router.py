@@ -22,3 +22,9 @@ router.include_router(
     prefix="/studies",
     tags=["studies"]
 )
+
+router.include_router(
+    study_ctrl.router,
+    prefix="/test",
+    tags=["test"]
+)
